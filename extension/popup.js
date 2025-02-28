@@ -3,11 +3,12 @@ const toggleBtn = document.getElementById('toggleBtn');
 toggleBtn.addEventListener('click', () => {
   if (toggleBtn.textContent === 'Activate') {
     toggleBtn.textContent = 'Deactivate';
-    // Request microphone access
+    
+    // Request microphone access here
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then((stream) => {
         console.log('Microphone access granted');
-        // Send a message to start the microphone monitoring
+        // Send a message to start the microphone monitoring in background.js
         chrome.runtime.sendMessage({ action: "start" });
       })
       .catch((err) => {
