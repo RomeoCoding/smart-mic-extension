@@ -1,4 +1,4 @@
-import sounddevice as sd
+import sounddevice as sd  # Add this import for sounddevice
 import numpy as np
 import websockets
 import asyncio
@@ -16,11 +16,11 @@ TYPING_THRESHOLD = 0.1  # Adjust this value based on testing
 uri = "ws://localhost:8765"
 
 # Updated function to handle the WebSocket connection
-async def send_audio_to_extension(websocket, path):  # Accept both websocket and path
+async def send_audio_to_extension(websocket):  # Remove the 'path' argument
     duration = 1  # seconds to record per cycle
     samplerate = 16000
     print("Monitoring sound...")
-    
+
     while True:
         # Record audio for a short period (1 second)
         audio = sd.rec(int(duration * samplerate), samplerate=samplerate, channels=1, dtype='float32')
