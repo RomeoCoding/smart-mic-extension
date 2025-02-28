@@ -17,7 +17,7 @@ The Smart Mic Extension is a browser extension that uses AI-powered voice recogn
 
 1. **Clone the Repository**  
    ```bash
-   git clone https://github.com/YOUR_USERNAME/smart-mic-extension.git
+   git clone https://github.com/RomeoCoding/smart-mic-extension.git
    cd smart-mic-extension
    ```  
 
