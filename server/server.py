@@ -3,6 +3,7 @@ import numpy as np
 import websockets
 import asyncio
 import json
+import torch
 from silero_vad import VAD
 
 # Initialize the VAD model
@@ -14,12 +15,12 @@ TYPING_THRESHOLD = 0.1  # Adjust this value based on testing
 # WebSocket connection URI
 uri = "ws://localhost:8765"
 
-async def send_audio_to_extension():
-    async with websockets.connect(uri) as websocket:
-        duration = 1  # seconds to record per cycle
-        samplerate = 16000
-        print("Monitoring sound...")
-        
+async def send_audio_to_extension(websocket, path):
+    duration = 1  # seconds to record per cycle
+    samplerate = 16000
+    print("Monitoring sound...")
+
+    try:
         while True:
             # Record audio for a short period (1 second)
             audio = sd.rec(int(duration * samplerate), samplerate=samplerate, channels=1, dtype='float32')
@@ -44,9 +45,18 @@ async def send_audio_to_extension():
             # Sleep before next audio cycle
             await asyncio.sleep(duration)
 
+    except websockets.exceptions.ConnectionClosed as e:
+        print(f"Connection closed: {e}")
+    except Exception as e:
+        print(f"Error occurred: {e}")
+    finally:
+        await websocket.close()
+
 async def start_server():
+    # Starting WebSocket server and listening on localhost:8765
     server = await websockets.serve(send_audio_to_extension, "localhost", 8765)
+    print("Server started, listening on ws://localhost:8765/")
     await server.wait_closed()
 
+# Run the WebSocket server
 asyncio.run(start_server())
-
