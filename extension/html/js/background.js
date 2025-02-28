@@ -20,7 +20,6 @@ function connectToServer() {
             const tabId = tabs[0].id;
             const actionFunc = message.action === "unmute" ? unmuteMic : muteMic;
 
-            // Execute the corresponding function in the context of the tab
             chrome.scripting.executeScript({
                 target: { tabId },
                 func: actionFunc
@@ -38,29 +37,34 @@ function connectToServer() {
 }
 
 function muteMic() {
-    console.log("Attempting to mute mic...");
-    // Look for the button with aria-label or data-tooltip specific to mute
-    const muteButton = document.querySelector('button[aria-label="Turn on microphone"], button[aria-label="Mute microphone"], button[data-tooltip="Turn off microphone"]');
-    if (muteButton) {
-        console.log("Mute button found, clicking...");
-        muteButton.click();
-        console.log("Mic Muted");
-    } else {
-        console.error("Mute button not found");
-    }
+    checkMuteState("muted");
 }
 
 function unmuteMic() {
-    console.log("Attempting to unmute mic...");
-    // Look for the button with aria-label or data-tooltip specific to unmute
-    const unmuteButton = document.querySelector('button[aria-label="Turn off microphone"], button[aria-label="Unmute microphone"], button[data-tooltip="Turn on microphone"]');
-    if (unmuteButton) {
-        console.log("Unmute button found, clicking...");
-        unmuteButton.click();
-        console.log("Mic Unmuted");
-    } else {
-        console.error("Unmute button not found");
+    checkMuteState("unmuted");
+}
+
+function checkMuteState(state) {
+    const muteButton = document.querySelector('button[aria-label*="Mute"], button[aria-label*="Unmute"]');
+    
+    if (!muteButton) {
+        console.log("Mute button not found.");
+        return;
     }
+
+    const buttonLabel = muteButton.getAttribute("aria-label").toLowerCase();
+
+    if ((state === "muted" && buttonLabel.includes("mute")) || 
+        (state === "unmuted" && buttonLabel.includes("unmute"))) {
+        playNotificationSound(state);
+    }
+}
+
+function playNotificationSound(state) {
+    const soundFile = state === "muted" ? "sounds/33782__jobro__3-beep-b.wav" : "sounds/33782__jobro__3-beep-b.wav"; // Replace with appropriate file if needed
+    const audio = new Audio(chrome.runtime.getURL(soundFile));
+    audio.play();
+    console.log(`${state.charAt(0).toUpperCase() + state.slice(1)} notification played.`);
 }
 
 function startMonitoring() {
