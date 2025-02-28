@@ -1,22 +1,19 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "Smart Mic Extension",
-  "description": "AI-powered Chrome extension that mutes background voices and unmutes only when your voice is detected.",
   "version": "1.0",
+  "description": "AI-powered mic extension",
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"],
+    "persistent": false
   },
-  "permissions": [
-    "microphone",
-    "activeTab",
-    "storage"
-  ],
-  "action": {
+  "browser_action": {
     "default_popup": "popup.html",
-    "default_icon": "icon.png"
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
   },
-  "host_permissions": [
-    "http://localhost/*",
-    "ws://localhost/*"
-  ]
+  "permissions": ["activeTab", "storage", "webNavigation"]
 }
