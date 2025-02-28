@@ -16,7 +16,7 @@ def check_device(device_index):
 # Setup parameters
 duration = 5  # seconds
 samplerate = 16000  # Hz
-channels = 19  # stereo audio
+channels = 1  # headset
 filename = "my_voice.wav"
 
 # List available devices
