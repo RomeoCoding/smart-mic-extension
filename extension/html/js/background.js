@@ -3,9 +3,9 @@ let isMonitoring = false;
 
 // Function to check if the mic is muted or unmuted and play sound
 function checkMuteState(state) {
-    // Try finding the mute button by aria-pressed or aria-label
-    const muteButton = document.querySelector('button[aria-pressed], button[aria-label*="Mute"], button[aria-label*="Unmute"]');
-    
+    // Try finding the mute/unmute button based on specific aria-labels for microphone
+    const muteButton = document.querySelector('button[aria-label="Mute microphone"], button[aria-label="Unmute microphone"], button[aria-pressed]');
+
     if (!muteButton) {
         console.log("Mute button not found.");
         return;
