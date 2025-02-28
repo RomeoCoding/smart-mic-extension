@@ -22,7 +22,7 @@ function connectToServer() {
 
             chrome.scripting.executeScript({
                 target: { tabId },
-                func: actionFunc
+                func: actionFunc,
             });
         });
     };
@@ -33,46 +33,6 @@ function connectToServer() {
 
     ws.onclose = () => {
         console.log("Disconnected from WebSocket server");
-    };
-}
-
-function muteMic() {
-    checkMuteState("muted");  // Ensure this function is defined before calling it
-}
-
-function unmuteMic() {
-    checkMuteState("unmuted");  // Ensure this function is defined before calling it
-}
-
-// Define checkMuteState function
-function checkMuteState(state) {
-    const muteButton = document.querySelector('button[aria-label*="Mute"], button[aria-label*="Unmute"]');
-    
-    if (!muteButton) {
-        console.log("Mute button not found.");
-        return;
-    }
-
-    const buttonLabel = muteButton.getAttribute("aria-label").toLowerCase();
-
-    if ((state === "muted" && buttonLabel.includes("mute")) || 
-        (state === "unmuted" && buttonLabel.includes("unmute"))) {
-        playNotificationSound(state);
-    }
-}
-
-// Define the function to play sound
-function playNotificationSound(state) {
-    console.log("Playing sound for state:", state);  // Add this for debugging
-    const soundFile = chrome.runtime.getURL('33782__jobro__3-beep-b.wav');  // Use runtime URL for audio
-    const audio = new Audio(soundFile);
-    
-    audio.play();
-    audio.onplay = () => {
-        console.log(`${state.charAt(0).toUpperCase() + state.slice(1)} notification played.`);
-    };
-    audio.onerror = (err) => {
-        console.error("Error playing sound:", err);
     };
 }
 
@@ -100,3 +60,45 @@ chrome.runtime.onMessage.addListener((message) => {
         stopMonitoring();
     }
 });
+
+// Function to mute the mic
+function muteMic() {
+    checkMuteState("muted");
+}
+
+// Function to unmute the mic
+function unmuteMic() {
+    checkMuteState("unmuted");
+}
+
+// Function to check if the mic is muted or unmuted and play sound
+function checkMuteState(state) {
+    const muteButton = document.querySelector('button[aria-label*="Mute"], button[aria-label*="Unmute"]');
+    
+    if (!muteButton) {
+        console.log("Mute button not found.");
+        return;
+    }
+
+    const buttonLabel = muteButton.getAttribute("aria-label").toLowerCase();
+
+    if ((state === "muted" && buttonLabel.includes("mute")) || 
+        (state === "unmuted" && buttonLabel.includes("unmute"))) {
+        playNotificationSound(state);
+    }
+}
+
+// Function to play the sound notification
+function playNotificationSound(state) {
+    console.log("Playing sound for state:", state);  // Add this for debugging
+    const soundFile = chrome.runtime.getURL('33782__jobro__3-beep-b.wav');  // Use runtime URL for audio
+    const audio = new Audio(soundFile);
+    
+    audio.play();
+    audio.onplay = () => {
+        console.log(`${state.charAt(0).toUpperCase() + state.slice(1)} notification played.`);
+    };
+    audio.onerror = (err) => {
+        console.error("Error playing sound:", err);
+    };
+}
