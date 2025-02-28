@@ -38,9 +38,9 @@ function connectToServer() {
 }
 
 function muteMic() {
-    console.log("Looking for mute button...");
-    // Look for the mute button (microphone icon)
-    const muteButton = document.querySelector('button[aria-label="Turn on microphone"]');
+    console.log("Attempting to mute mic...");
+    // Look for the button with aria-label or data-tooltip specific to mute
+    const muteButton = document.querySelector('button[aria-label="Turn on microphone"], button[aria-label="Mute microphone"], button[data-tooltip="Turn off microphone"]');
     if (muteButton) {
         console.log("Mute button found, clicking...");
         muteButton.click();
@@ -51,9 +51,9 @@ function muteMic() {
 }
 
 function unmuteMic() {
-    console.log("Looking for unmute button...");
-    // Look for the unmute button (microphone icon)
-    const unmuteButton = document.querySelector('button[aria-label="Turn off microphone"]');
+    console.log("Attempting to unmute mic...");
+    // Look for the button with aria-label or data-tooltip specific to unmute
+    const unmuteButton = document.querySelector('button[aria-label="Turn off microphone"], button[aria-label="Unmute microphone"], button[data-tooltip="Turn on microphone"]');
     if (unmuteButton) {
         console.log("Unmute button found, clicking...");
         unmuteButton.click();
