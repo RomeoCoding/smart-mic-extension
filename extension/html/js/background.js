@@ -11,6 +11,7 @@ function checkMuteState(state) {
     }
 
     const buttonLabel = muteButton.getAttribute("aria-label").toLowerCase();
+    console.log("Button label:", buttonLabel);  // Debugging: Log the button label
 
     if ((state === "muted" && buttonLabel.includes("mute")) || 
         (state === "unmuted" && buttonLabel.includes("unmute"))) {
@@ -18,20 +19,10 @@ function checkMuteState(state) {
     }
 }
 
-// Function to mute the mic
-function muteMic() {
-    checkMuteState("muted");
-}
-
-// Function to unmute the mic
-function unmuteMic() {
-    checkMuteState("unmuted");
-}
-
 // Function to play the sound notification
 function playNotificationSound(state) {
     console.log("Playing sound for state:", state);  // Add this for debugging
-    const soundFile = chrome.runtime.getURL('33782__jobro__3-beep-b.wav');  // Use runtime URL for audio
+    const soundFile = chrome.runtime.getURL('33782__jobro__3-beep-b.wav');  // Correct path for audio
     const audio = new Audio(soundFile);
     
     audio.play();
@@ -43,6 +34,7 @@ function playNotificationSound(state) {
     };
 }
 
+// Function to connect to the WebSocket server
 function connectToServer() {
     ws = new WebSocket("ws://localhost:8765");
 
@@ -52,6 +44,7 @@ function connectToServer() {
 
     ws.onmessage = (event) => {
         const message = JSON.parse(event.data);
+        console.log('Received message from WebSocket:', message);  // Debugging
 
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs.length === 0 || !tabs[0].url.includes("meet.google.com")) {
@@ -60,11 +53,11 @@ function connectToServer() {
             }
 
             const tabId = tabs[0].id;
-            const actionFunc = message.action === "unmute" ? unmuteMic : muteMic;
-
+            // Send the action directly (no need to execute the function through scripting)
             chrome.scripting.executeScript({
                 target: { tabId },
-                func: actionFunc,
+                func: checkMuteState,
+                args: [message.action]  // Pass the action (either "muted" or "unmuted")
             });
         });
     };
@@ -78,6 +71,7 @@ function connectToServer() {
     };
 }
 
+// Function to start monitoring
 function startMonitoring() {
     if (!isMonitoring) {
         console.log('Starting microphone monitoring...');
@@ -86,6 +80,7 @@ function startMonitoring() {
     }
 }
 
+// Function to stop monitoring
 function stopMonitoring() {
     if (isMonitoring && ws) {
         console.log('Stopping microphone monitoring...');
@@ -94,8 +89,9 @@ function stopMonitoring() {
     }
 }
 
+// Listening for start/stop commands from the runtime
 chrome.runtime.onMessage.addListener((message) => {
-    console.log('Received message:', message);
+    console.log('Received message:', message);  // Debugging
     if (message.action === "start") {
         startMonitoring();
     } else if (message.action === "stop") {
