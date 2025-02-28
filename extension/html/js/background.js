@@ -1,6 +1,48 @@
 let ws;
 let isMonitoring = false;
 
+// Function to check if the mic is muted or unmuted and play sound
+function checkMuteState(state) {
+    const muteButton = document.querySelector('button[aria-label*="Mute"], button[aria-label*="Unmute"]');
+    
+    if (!muteButton) {
+        console.log("Mute button not found.");
+        return;
+    }
+
+    const buttonLabel = muteButton.getAttribute("aria-label").toLowerCase();
+
+    if ((state === "muted" && buttonLabel.includes("mute")) || 
+        (state === "unmuted" && buttonLabel.includes("unmute"))) {
+        playNotificationSound(state);
+    }
+}
+
+// Function to mute the mic
+function muteMic() {
+    checkMuteState("muted");
+}
+
+// Function to unmute the mic
+function unmuteMic() {
+    checkMuteState("unmuted");
+}
+
+// Function to play the sound notification
+function playNotificationSound(state) {
+    console.log("Playing sound for state:", state);  // Add this for debugging
+    const soundFile = chrome.runtime.getURL('33782__jobro__3-beep-b.wav');  // Use runtime URL for audio
+    const audio = new Audio(soundFile);
+    
+    audio.play();
+    audio.onplay = () => {
+        console.log(`${state.charAt(0).toUpperCase() + state.slice(1)} notification played.`);
+    };
+    audio.onerror = (err) => {
+        console.error("Error playing sound:", err);
+    };
+}
+
 function connectToServer() {
     ws = new WebSocket("ws://localhost:8765");
 
@@ -60,45 +102,3 @@ chrome.runtime.onMessage.addListener((message) => {
         stopMonitoring();
     }
 });
-
-// Function to mute the mic
-function muteMic() {
-    checkMuteState("muted");
-}
-
-// Function to unmute the mic
-function unmuteMic() {
-    checkMuteState("unmuted");
-}
-
-// Function to check if the mic is muted or unmuted and play sound
-function checkMuteState(state) {
-    const muteButton = document.querySelector('button[aria-label*="Mute"], button[aria-label*="Unmute"]');
-    
-    if (!muteButton) {
-        console.log("Mute button not found.");
-        return;
-    }
-
-    const buttonLabel = muteButton.getAttribute("aria-label").toLowerCase();
-
-    if ((state === "muted" && buttonLabel.includes("mute")) || 
-        (state === "unmuted" && buttonLabel.includes("unmute"))) {
-        playNotificationSound(state);
-    }
-}
-
-// Function to play the sound notification
-function playNotificationSound(state) {
-    console.log("Playing sound for state:", state);  // Add this for debugging
-    const soundFile = chrome.runtime.getURL('33782__jobro__3-beep-b.wav');  // Use runtime URL for audio
-    const audio = new Audio(soundFile);
-    
-    audio.play();
-    audio.onplay = () => {
-        console.log(`${state.charAt(0).toUpperCase() + state.slice(1)} notification played.`);
-    };
-    audio.onerror = (err) => {
-        console.error("Error playing sound:", err);
-    };
-}
