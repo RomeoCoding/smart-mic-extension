@@ -61,10 +61,19 @@ function checkMuteState(state) {
 }
 
 function playNotificationSound(state) {
-    const soundFile = state === "muted" ? "sounds/33782__jobro__3-beep-b.wav" : "sounds/33782__jobro__3-beep-b.wav"; // Replace with appropriate file if needed
-    const audio = new Audio(chrome.runtime.getURL(soundFile));
+    // Play the same sound for both muting and unmuting
+    const soundFile = state === "muted" ? "33782__jobro__3-beep-b.wav" : "33782__jobro__3-beep-b.wav";  
+
+    const audio = new Audio(soundFile);  // Reference the sound file in the same folder as background.js
     audio.play();
-    console.log(`${state.charAt(0).toUpperCase() + state.slice(1)} notification played.`);
+
+    audio.onplay = () => {
+        console.log(`${state.charAt(0).toUpperCase() + state.slice(1)} notification played.`);
+    };
+
+    audio.onerror = (err) => {
+        console.error("Error playing sound:", err);
+    };
 }
 
 function startMonitoring() {
