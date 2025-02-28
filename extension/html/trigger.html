@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mic Permission Trigger</title>
+</head>
+<body>
+  <script>
+    // Request microphone access
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(() => {
+        console.log('Microphone access granted');
+      })
+      .catch((err) => {
+        console.error('Microphone access denied:', err);
+      });
+  </script>
+</body>
+</html>

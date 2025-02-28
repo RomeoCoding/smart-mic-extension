@@ -2,6 +2,7 @@ let ws;
 let isMonitoring = false;
 
 function connectToServer() {
+    // Open a WebSocket connection to the server
     ws = new WebSocket("ws://localhost:8765");
 
     ws.onopen = () => {
@@ -9,20 +10,20 @@ function connectToServer() {
     };
 
     ws.onmessage = (event) => {
+        // Parse the incoming WebSocket message
         const message = JSON.parse(event.data);
         if (message.action === "unmute") {
             console.log("Unmuting mic...");
-            // You need to handle the unmute action in the page context,
-            // e.g., by interacting with the page's DOM or a content script.
+            // Execute script to unmute the microphone in the active tab
             chrome.scripting.executeScript({
-                target: { tabId: chrome.tabs.TAB_ID }, // Replace with the correct tabId
+                target: { tabId: chrome.tabs.TAB_ID },  // Replace with the correct tabId
                 func: unmuteMic
             });
         } else if (message.action === "mute") {
             console.log("Muting mic...");
-            // Similarly, mute action needs to interact with the page context.
+            // Execute script to mute the microphone in the active tab
             chrome.scripting.executeScript({
-                target: { tabId: chrome.tabs.TAB_ID }, // Replace with the correct tabId
+                target: { tabId: chrome.tabs.TAB_ID },  // Replace with the correct tabId
                 func: muteMic
             });
         }
@@ -39,15 +40,16 @@ function connectToServer() {
 
 function unmuteMic() {
     const unmuteButton = document.querySelector('button[aria-label="Unmute microphone"]');
-    if (unmuteButton) unmuteButton.click();
+    if (unmuteButton) unmuteButton.click();  // Trigger the unmute action
 }
 
 function muteMic() {
     const muteButton = document.querySelector('button[aria-label="Mute microphone"]');
-    if (muteButton) muteButton.click();
+    if (muteButton) muteButton.click();  // Trigger the mute action
 }
 
 function startMonitoring() {
+    // Only attempt to connect to the WebSocket if it's not already active
     if (!isMonitoring) {
         connectToServer();
         isMonitoring = true;
@@ -55,12 +57,14 @@ function startMonitoring() {
 }
 
 function stopMonitoring() {
+    // Close the WebSocket connection when stopping the monitoring
     if (isMonitoring && ws) {
         ws.close();
         isMonitoring = false;
     }
 }
 
+// Listen for start/stop actions from other parts of the extension (e.g., popup.js)
 chrome.runtime.onMessage.addListener((message) => {
     if (message.action === "start") {
         startMonitoring();
