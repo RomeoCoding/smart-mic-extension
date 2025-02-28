@@ -4,10 +4,10 @@ import numpy as np
 import websockets
 import asyncio
 import json
-from silero_vad import Vad
+from silero_vad import SileroVAD
 
 # Load the Silero VAD model
-model = Vad.from_pretrained(r'C:\Users\matro\smart-mic-extension\server\silero-vad')
+model = SileroVAD.from_pretrained(r'C:\Users\matro\smart-mic-extension\server\silero-vad')
 
 # Typing sound detection threshold
 TYPING_THRESHOLD = 0.1  # Adjust this value based on testing
