@@ -9,8 +9,7 @@
   "permissions": [
     "activeTab",
     "storage",
-    "webNavigation",
-    "microphone"
+    "webNavigation"
   ],
   "host_permissions": [
     "http://localhost/*",
@@ -28,5 +27,8 @@
     "16": "icon16.png",
     "48": "icon48.png",
     "128": "icon128.png"
-  }
+  },
+  "optional_permissions": [
+    "microphone"
+  ]
 }
