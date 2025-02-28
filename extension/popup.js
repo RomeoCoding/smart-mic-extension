@@ -13,6 +13,9 @@ toggleBtn.addEventListener('click', () => {
       })
       .catch((err) => {
         console.error('Microphone access denied:', err);
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          alert('Microphone access denied. Please check your permissions.');
+        }
       });
   } else {
     toggleBtn.textContent = 'Activate';
