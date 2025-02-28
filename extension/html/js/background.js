@@ -37,23 +37,25 @@ function connectToServer() {
 }
 
 function muteMic() {
-    document.querySelectorAll('button').forEach(button => {
-        if (button.getAttribute("data-tooltip")?.includes("Turn off microphone") || 
-            button.getAttribute("aria-label")?.includes("Mute")) {
-            button.click();
-            console.log("Mic Muted");
-        }
-    });
+    // Attempt to click the mute button (in Google Meet, this button has the aria-label for turning on/off microphone)
+    const muteButton = document.querySelector('button[aria-label="Turn on microphone"]');
+    if (muteButton) {
+        muteButton.click();
+        console.log("Mic Muted");
+    } else {
+        console.error("Mute button not found");
+    }
 }
 
 function unmuteMic() {
-    document.querySelectorAll('button').forEach(button => {
-        if (button.getAttribute("data-tooltip")?.includes("Turn on microphone") || 
-            button.getAttribute("aria-label")?.includes("Unmute")) {
-            button.click();
-            console.log("Mic Unmuted");
-        }
-    });
+    // Attempt to click the unmute button (in Google Meet, this button has the aria-label for turning on/off microphone)
+    const unmuteButton = document.querySelector('button[aria-label="Turn off microphone"]');
+    if (unmuteButton) {
+        unmuteButton.click();
+        console.log("Mic Unmuted");
+    } else {
+        console.error("Unmute button not found");
+    }
 }
 
 function startMonitoring() {
