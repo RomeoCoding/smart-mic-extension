@@ -3,7 +3,7 @@ import numpy as np
 import websockets
 import asyncio
 import json
-from silero_vad import load_silero_vad, read_audio, get_speech_timestamps
+from silero_vad import load_silero_vad, get_speech_timestamps
 import torch
 
 # Initialize the VAD model
@@ -15,8 +15,8 @@ TYPING_THRESHOLD = 0.1  # Adjust this value based on testing
 # WebSocket connection URI
 uri = "ws://localhost:8765"
 
-# Updated function to match WebSocket server handler signature
-async def send_audio_to_extension(websocket, path):  # Ensure both parameters are included
+# Updated function to handle the WebSocket connection
+async def send_audio_to_extension(websocket, path):  # Accept both websocket and path
     duration = 1  # seconds to record per cycle
     samplerate = 16000
     print("Monitoring sound...")
@@ -50,7 +50,7 @@ async def send_audio_to_extension(websocket, path):  # Ensure both parameters ar
 
 # Start WebSocket server
 async def start_server():
-    server = await websockets.serve(send_audio_to_extension, "localhost", 8765)
+    server = await websockets.serve(send_audio_to_extension, "localhost", 8765)  # Ensure correct signature
     await server.wait_closed()
 
 # Run the WebSocket server
