@@ -9,7 +9,8 @@
   "permissions": [
     "activeTab",
     "storage",
-    "webNavigation"
+    "webNavigation",
+    "scripting"  // Add this
   ],
   "host_permissions": [
     "http://localhost/*",

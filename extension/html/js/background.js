@@ -10,19 +10,25 @@ function connectToServer() {
 
     ws.onmessage = (event) => {
         const message = JSON.parse(event.data);
-        if (message.action === "unmute") {
-            console.log("Unmuting mic...");
-            chrome.scripting.executeScript({
-                target: { tabId: chrome.tabs.TAB_ID },  // Replace with the correct tabId
-                func: unmuteMic
-            });
-        } else if (message.action === "mute") {
-            console.log("Muting mic...");
-            chrome.scripting.executeScript({
-                target: { tabId: chrome.tabs.TAB_ID },  // Replace with the correct tabId
-                func: muteMic
-            });
-        }
+        
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            if (tabs.length === 0) return;
+            const tabId = tabs[0].id;
+
+            if (message.action === "unmute") {
+                console.log("Unmuting mic...");
+                chrome.scripting.executeScript({
+                    target: { tabId },
+                    func: unmuteMic
+                });
+            } else if (message.action === "mute") {
+                console.log("Muting mic...");
+                chrome.scripting.executeScript({
+                    target: { tabId },
+                    func: muteMic
+                });
+            }
+        });
     };
 
     ws.onerror = (error) => {
