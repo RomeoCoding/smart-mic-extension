@@ -1,13 +1,13 @@
-import torch
 import sounddevice as sd
 import numpy as np
 import websockets
 import asyncio
 import json
-from silero_vad import SileroVAD
+from silero_vad import load_silero_vad, read_audio, get_speech_timestamps
+import torch
 
-# Load the Silero VAD model
-model = SileroVAD.from_pretrained(r'C:\Users\matro\smart-mic-extension\server\silero-vad')
+# Initialize the VAD model
+model = load_silero_vad()
 
 # Typing sound detection threshold
 TYPING_THRESHOLD = 0.1  # Adjust this value based on testing
@@ -20,7 +20,7 @@ async def send_audio_to_extension():
         duration = 1  # seconds to record per cycle
         samplerate = 16000
         print("Monitoring sound...")
-
+        
         while True:
             # Record audio for a short period (1 second)
             audio = sd.rec(int(duration * samplerate), samplerate=samplerate, channels=1, dtype='float32')
@@ -35,10 +35,13 @@ async def send_audio_to_extension():
                 await websocket.send(json.dumps({"action": "mute"}))
 
             # Check for voice activity (your speech)
-            audio_tensor = torch.tensor(audio)
-            speech_detected = model(audio_tensor)
+            speech_timestamps = get_speech_timestamps(
+                audio.flatten(),  # Flatten the audio array
+                model,
+                return_seconds=True
+            )
 
-            if speech_detected:
+            if speech_timestamps:  # If speech is detected (timestamps will be non-empty)
                 print("Speech detected, unmuting mic...")
                 await websocket.send(json.dumps({"action": "unmute"}))
 
