@@ -9,7 +9,8 @@
   "permissions": [
     "activeTab",
     "storage",
-    "webNavigation"
+    "webNavigation",
+    "microphone"
   ],
   "host_permissions": [
     "http://localhost/*",
