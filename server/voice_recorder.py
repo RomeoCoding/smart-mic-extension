@@ -35,6 +35,7 @@ try:
         raise ValueError(f"Audio shape is invalid. Expected {channels} channels, got {audio_tensor.shape[1]}.")
 
     # Save audio to file
+    torchaudio.set_audio_backend("sox_io")
     torchaudio.save(filename, audio_tensor, samplerate)
     print(f"Voice sample saved as {filename}")
 
