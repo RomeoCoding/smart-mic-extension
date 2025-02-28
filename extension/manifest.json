@@ -1,20 +1,31 @@
 {
   "manifest_version": 3,
-  "name": "Microphone Control Extension",
+  "name": "Smart Mic Extension",
   "version": "1.0",
-  "permissions": [
-    "activeTab",
-    "tabs",
-    "storage"
-  ],
+  "description": "AI-powered mic extension",
   "background": {
     "service_worker": "js/background.js"
   },
-  "action": {
-    "default_popup": "html/popup.html"
-  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "webNavigation"
+  ],
   "host_permissions": [
-    "http://*/*",
-    "https://*/*"
-  ]
+  "http://localhost/*",
+  "ws://localhost/*"
+  ],
+  "action": {
+    "default_popup": "html/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
 }

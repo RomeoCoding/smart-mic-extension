@@ -1,5 +1,6 @@
 let ws;
 let isMonitoring = false;
+let currentTabId = null;
 
 function connectToServer() {
     // Open a WebSocket connection to the server
@@ -14,18 +15,22 @@ function connectToServer() {
         const message = JSON.parse(event.data);
         if (message.action === "unmute") {
             console.log("Unmuting mic...");
-            // Execute script to unmute the microphone in the active tab
-            chrome.scripting.executeScript({
-                target: { tabId: chrome.tabs.TAB_ID },  // Replace with the correct tabId
-                func: unmuteMic
-            });
+            // Ensure tabId is set
+            if (currentTabId !== null) {
+                chrome.scripting.executeScript({
+                    target: { tabId: currentTabId },  // Use the active tabId
+                    func: unmuteMic
+                });
+            }
         } else if (message.action === "mute") {
             console.log("Muting mic...");
-            // Execute script to mute the microphone in the active tab
-            chrome.scripting.executeScript({
-                target: { tabId: chrome.tabs.TAB_ID },  // Replace with the correct tabId
-                func: muteMic
-            });
+            // Ensure tabId is set
+            if (currentTabId !== null) {
+                chrome.scripting.executeScript({
+                    target: { tabId: currentTabId },  // Use the active tabId
+                    func: muteMic
+                });
+            }
         }
     };
 
@@ -49,18 +54,21 @@ function muteMic() {
 }
 
 function startMonitoring() {
-    // Only attempt to connect to the WebSocket if it's not already active
     if (!isMonitoring) {
-        connectToServer();
-        isMonitoring = true;
+        // Get the active tab ID before connecting to the server
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            currentTabId = tabs[0].id;  // Get the current active tab ID
+            connectToServer();
+            isMonitoring = true;
+        });
     }
 }
 
 function stopMonitoring() {
-    // Close the WebSocket connection when stopping the monitoring
     if (isMonitoring && ws) {
         ws.close();
         isMonitoring = false;
+        currentTabId = null;  // Clear tabId
     }
 }
 
