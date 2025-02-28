@@ -8,6 +8,10 @@ filename = "my_voice.wav"
 waveform, sample_rate = torchaudio.load(filename)
 
 # Convert to numpy for playback (if necessary)
+# Ensure that the waveform is mono or stereo and handle it
+if waveform.ndimension() > 1:  # If stereo, convert to mono by averaging channels
+    waveform = waveform.mean(dim=0)  # Convert to mono by averaging channels
+
 audio = waveform.numpy()
 
 # Play the audio
