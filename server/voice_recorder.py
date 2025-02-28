@@ -16,16 +16,12 @@ def check_device(device_index):
 # Setup parameters
 duration = 5  # seconds
 samplerate = 16000  # Hz
-channels = 2  # stereo audio
+channels = 1  # stereo audio
 filename = "my_voice.wav"
 
 # List available devices
 print("Available devices:")
 print(sd.query_devices())
-
-# Check if the default device is available
-if not check_device(sd.default.device[0]):
-    raise ValueError("The default device is not available. Please check your device configuration.")
 
 # Record audio
 try:
