@@ -30,19 +30,16 @@ function connectToServer() {
 
 function startMonitoring() {
     if (!isMonitoring) {
-        // Request microphone permission
-        chrome.permissions.request({
-            permissions: ['microphone'],
-            origins: ['http://localhost/', 'ws://localhost/']
-        }, (granted) => {
-            if (granted) {
-                console.log("Microphone access granted!");
+        // Request microphone access
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then((stream) => {
                 connectToServer();
                 isMonitoring = true;
-            } else {
-                console.log("Microphone access denied.");
-            }
-        });
+                console.log("Microphone access granted");
+            })
+            .catch((err) => {
+                console.error("Microphone access denied", err);
+            });
     }
 }
 
