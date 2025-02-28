@@ -1,7 +1,6 @@
 let ws;
-let isMonitoring = false;  // Track the connection state
+let isMonitoring = false;
 
-// Function to connect to WebSocket server
 function connectToServer() {
     ws = new WebSocket("ws://localhost:8765");
 
@@ -13,10 +12,10 @@ function connectToServer() {
         const message = JSON.parse(event.data);
         if (message.action === "unmute") {
             console.log("Unmuting mic...");
-            document.querySelector('button[aria-label="Unmute microphone"]').click();  // Example of unmuting
+            document.querySelector('button[aria-label="Unmute microphone"]').click();
         } else if (message.action === "mute") {
             console.log("Muting mic...");
-            document.querySelector('button[aria-label="Mute microphone"]').click();  // Example of muting
+            document.querySelector('button[aria-label="Mute microphone"]').click();
         }
     };
 
@@ -29,7 +28,6 @@ function connectToServer() {
     };
 }
 
-// Function to start monitoring
 function startMonitoring() {
     if (!isMonitoring) {
         connectToServer();
@@ -37,7 +35,6 @@ function startMonitoring() {
     }
 }
 
-// Function to stop monitoring
 function stopMonitoring() {
     if (isMonitoring && ws) {
         ws.close();
@@ -45,7 +42,6 @@ function stopMonitoring() {
     }
 }
 
-// Listen for start/stop actions from popup.js
 chrome.runtime.onMessage.addListener((message) => {
     if (message.action === "start") {
         startMonitoring();
