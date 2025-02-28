@@ -15,6 +15,8 @@ toggleBtn.addEventListener('click', () => {
         console.error('Microphone access denied:', err);
         if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
           alert('Microphone access denied. Please check your permissions.');
+        } else {
+          alert('Error accessing microphone. Try again later.');
         }
       });
   } else {
