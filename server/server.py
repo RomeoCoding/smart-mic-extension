@@ -1,46 +1,52 @@
-import torch
-import torchaudio
-import numpy as np
 import sounddevice as sd
-import asyncio
+import numpy as np
 import websockets
-from silero_vad import get_speech_timestamps, load_model
-from speechbrain.pretrained import SpeakerRecognition
+import asyncio
+import json
+from silero_vad import VAD
 
-# Load the VAD (Voice Activity Detection) model
-model, utils = load_model(device=torch.device('cpu'))
-(get_speech_timestamps, _, read_audio, *_ ) = utils
+# Initialize the VAD model
+vad = VAD()
 
-# Load the speaker verification model
-spk_model = SpeakerRecognition.from_hparams(source="speechbrain/spkrec-ecapa-voxceleb", savedir="tmp")
+# Typing sound detection threshold
+TYPING_THRESHOLD = 0.1  # Adjust this value based on testing
 
-# Load a sample of YOUR voice for recognition
-YOUR_VOICE_SAMPLE = "my_voice.wav"
+# WebSocket connection URI
+uri = "ws://localhost:8765"
 
-def is_my_voice(audio_path):
-    score, _ = spk_model.verify_files(YOUR_VOICE_SAMPLE, audio_path)
-    return score.item() > 0.8  # Adjust threshold as needed
+async def send_audio_to_extension():
+    async with websockets.connect(uri) as websocket:
+        duration = 1  # seconds to record per cycle
+        samplerate = 16000
+        print("Monitoring sound...")
+        
+        while True:
+            # Record audio for a short period (1 second)
+            audio = sd.rec(int(duration * samplerate), samplerate=samplerate, channels=1, dtype='float32')
+            sd.wait()
 
-async def detect_voice(websocket, path):
-    def callback(indata, frames, time, status):
-        audio_np = np.array(indata[:, 0], dtype=np.float32)
-        speech_timestamps = get_speech_timestamps(audio_np, model, sampling_rate=16000)
+            # Calculate the loudness of the audio
+            loudness = np.max(np.abs(audio))  # Get the peak amplitude (absolute value)
 
-        if speech_timestamps:
-            # Save audio to a temp file and compare
-            torchaudio.save("temp.wav", torch.tensor(audio_np), 16000)
-            if is_my_voice("temp.wav"):
-                asyncio.run(websocket.send("unmute"))  # Your voice detected → Unmute
-            else:
-                asyncio.run(websocket.send("mute"))  # Someone else is speaking → Mute
-        else:
-            asyncio.run(websocket.send("mute"))  # No speech detected → Mute
+            # Check if the loudness exceeds the typing threshold
+            if loudness > TYPING_THRESHOLD:
+                print("Typing detected, muting mic...")
+                await websocket.send(json.dumps({"action": "mute"}))
 
-    with sd.InputStream(callback=callback, channels=1, samplerate=16000):
-        asyncio.get_event_loop().run_forever()
+            # Check for voice activity (your speech)
+            audio_tensor = torch.tensor(audio)
+            speech_detected = vad(audio_tensor)
 
-async def main():
-    async with websockets.serve(detect_voice, "localhost", 8765):
-        await asyncio.Future()
+            if speech_detected:
+                print("Speech detected, unmuting mic...")
+                await websocket.send(json.dumps({"action": "unmute"}))
 
-asyncio.run(main())
+            # Sleep before next audio cycle
+            await asyncio.sleep(duration)
+
+async def start_server():
+    server = await websockets.serve(send_audio_to_extension, "localhost", 8765)
+    await server.wait_closed()
+
+asyncio.run(start_server())
+

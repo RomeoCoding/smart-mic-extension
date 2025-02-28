@@ -1,19 +1,18 @@
-let socket = new WebSocket("ws://localhost:8765");
+let ws = new WebSocket("ws://localhost:8765");
 
-socket.onmessage = (event) => {
-    let action = event.data; // "mute" or "unmute"
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-        chrome.scripting.executeScript({
-            target: {tabId: tabs[0].id},
-            function: toggleMute,
-            args: [action === "mute"]
-        });
-    });
+ws.onopen = () => {
+  console.log("Connected to WebSocket server");
 };
 
-function toggleMute(shouldMute) {
-    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-        let track = stream.getAudioTracks()[0];
-        track.enabled = !shouldMute;
-    });
-}
+ws.onmessage = (event) => {
+  const message = JSON.parse(event.data);
+  if (message.action === "unmute") {
+    console.log("Unmuting mic...");
+    // Logic to unmute the microphone
+    document.querySelector('button[aria-label="Unmute microphone"]').click(); // Example of unmuting
+  } else if (message.action === "mute") {
+    console.log("Muting mic...");
+    // Logic to mute the microphone
+    document.querySelector('button[aria-label="Mute microphone"]').click(); // Example of muting
+  }
+};
