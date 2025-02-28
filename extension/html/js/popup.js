@@ -15,12 +15,16 @@ toggleBtn.addEventListener('click', () => {
       })
       .catch((err) => {
         console.error('Microphone access denied:', err);
+      
         if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
           alert('Microphone access denied. Please check your browser settings.');
+        } else if (err.name === 'NotFoundError') {
+          alert('No microphone found. Please ensure a microphone is connected to your device.');
         } else {
           alert('An unexpected error occurred while accessing the microphone. Please try again.');
         }
       });
+      
   } else {
     toggleBtn.textContent = 'Activate';
     console.log('Stopping monitoring...');

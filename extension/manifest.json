@@ -4,7 +4,7 @@
   "version": "1.0",
   "description": "AI-powered mic extension",
   "background": {
-    "service_worker": "html/js/background.js"
+    "service_worker": "js/background.js"
   },
   "permissions": [
     "activeTab",
@@ -12,8 +12,9 @@
     "webNavigation"
   ],
   "host_permissions": [
-  "http://localhost/*",
-  "ws://localhost/*"
+    "http://localhost/*",
+    "https://localhost/*",  
+    "ws://localhost/*"
   ],
   "action": {
     "default_popup": "html/popup.html",
