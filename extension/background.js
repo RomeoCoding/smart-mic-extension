@@ -28,18 +28,22 @@ function connectToServer() {
     };
 }
 
+// Request microphone access
+function requestMicrophoneAccess() {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then((stream) => {
+            console.log('Microphone access granted');
+            startMonitoring();
+        })
+        .catch((err) => {
+            console.error('Microphone access denied', err);
+        });
+}
+
 function startMonitoring() {
     if (!isMonitoring) {
-        // Request microphone access
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then((stream) => {
-                connectToServer();
-                isMonitoring = true;
-                console.log("Microphone access granted");
-            })
-            .catch((err) => {
-                console.error("Microphone access denied", err);
-            });
+        connectToServer();
+        isMonitoring = true;
     }
 }
 
@@ -52,7 +56,7 @@ function stopMonitoring() {
 
 chrome.runtime.onMessage.addListener((message) => {
     if (message.action === "start") {
-        startMonitoring();
+        requestMicrophoneAccess();  // Request microphone access before starting monitoring
     } else if (message.action === "stop") {
         stopMonitoring();
     }
