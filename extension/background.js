@@ -28,18 +28,6 @@ function connectToServer() {
     };
 }
 
-// Request microphone access
-function requestMicrophoneAccess() {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-        .then((stream) => {
-            console.log('Microphone access granted');
-            startMonitoring();
-        })
-        .catch((err) => {
-            console.error('Microphone access denied', err);
-        });
-}
-
 function startMonitoring() {
     if (!isMonitoring) {
         connectToServer();
@@ -56,7 +44,7 @@ function stopMonitoring() {
 
 chrome.runtime.onMessage.addListener((message) => {
     if (message.action === "start") {
-        requestMicrophoneAccess();  // Request microphone access before starting monitoring
+        startMonitoring();
     } else if (message.action === "stop") {
         stopMonitoring();
     }
