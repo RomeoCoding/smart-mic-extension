@@ -1,9 +1,7 @@
 let ws;
 let isMonitoring = false;
-let currentTabId = null;
 
 function connectToServer() {
-    // Open a WebSocket connection to the server
     ws = new WebSocket("ws://localhost:8765");
 
     ws.onopen = () => {
@@ -11,26 +9,19 @@ function connectToServer() {
     };
 
     ws.onmessage = (event) => {
-        // Parse the incoming WebSocket message
         const message = JSON.parse(event.data);
         if (message.action === "unmute") {
             console.log("Unmuting mic...");
-            // Ensure tabId is set
-            if (currentTabId !== null) {
-                chrome.scripting.executeScript({
-                    target: { tabId: currentTabId },  // Use the active tabId
-                    func: unmuteMic
-                });
-            }
+            chrome.scripting.executeScript({
+                target: { tabId: chrome.tabs.TAB_ID },  // Replace with the correct tabId
+                func: unmuteMic
+            });
         } else if (message.action === "mute") {
             console.log("Muting mic...");
-            // Ensure tabId is set
-            if (currentTabId !== null) {
-                chrome.scripting.executeScript({
-                    target: { tabId: currentTabId },  // Use the active tabId
-                    func: muteMic
-                });
-            }
+            chrome.scripting.executeScript({
+                target: { tabId: chrome.tabs.TAB_ID },  // Replace with the correct tabId
+                func: muteMic
+            });
         }
     };
 
@@ -45,35 +36,32 @@ function connectToServer() {
 
 function unmuteMic() {
     const unmuteButton = document.querySelector('button[aria-label="Unmute microphone"]');
-    if (unmuteButton) unmuteButton.click();  // Trigger the unmute action
+    if (unmuteButton) unmuteButton.click();
 }
 
 function muteMic() {
     const muteButton = document.querySelector('button[aria-label="Mute microphone"]');
-    if (muteButton) muteButton.click();  // Trigger the mute action
+    if (muteButton) muteButton.click();
 }
 
 function startMonitoring() {
     if (!isMonitoring) {
-        // Get the active tab ID before connecting to the server
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            currentTabId = tabs[0].id;  // Get the current active tab ID
-            connectToServer();
-            isMonitoring = true;
-        });
+        console.log('Starting microphone monitoring...');
+        connectToServer();
+        isMonitoring = true;
     }
 }
 
 function stopMonitoring() {
     if (isMonitoring && ws) {
+        console.log('Stopping microphone monitoring...');
         ws.close();
         isMonitoring = false;
-        currentTabId = null;  // Clear tabId
     }
 }
 
-// Listen for start/stop actions from other parts of the extension (e.g., popup.js)
 chrome.runtime.onMessage.addListener((message) => {
+    console.log('Received message:', message);
     if (message.action === "start") {
         startMonitoring();
     } else if (message.action === "stop") {
