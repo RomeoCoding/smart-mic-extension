@@ -50,7 +50,9 @@ async def send_audio_to_extension(websocket, path):  # Accept both websocket and
 
 # Start WebSocket server
 async def start_server():
+    # Correctly set up the server with the handler function signature
     server = await websockets.serve(send_audio_to_extension, "localhost", 8765)  # Ensure correct signature
+    print("WebSocket server started on ws://localhost:8765")
     await server.wait_closed()
 
 # Run the WebSocket server
