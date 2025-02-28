@@ -20,6 +20,7 @@ function connectToServer() {
             const tabId = tabs[0].id;
             const actionFunc = message.action === "unmute" ? unmuteMic : muteMic;
 
+            // Execute the corresponding function in the context of the tab
             chrome.scripting.executeScript({
                 target: { tabId },
                 func: actionFunc
@@ -37,9 +38,11 @@ function connectToServer() {
 }
 
 function muteMic() {
-    // Attempt to click the mute button (in Google Meet, this button has the aria-label for turning on/off microphone)
+    console.log("Looking for mute button...");
+    // Look for the mute button (microphone icon)
     const muteButton = document.querySelector('button[aria-label="Turn on microphone"]');
     if (muteButton) {
+        console.log("Mute button found, clicking...");
         muteButton.click();
         console.log("Mic Muted");
     } else {
@@ -48,9 +51,11 @@ function muteMic() {
 }
 
 function unmuteMic() {
-    // Attempt to click the unmute button (in Google Meet, this button has the aria-label for turning on/off microphone)
+    console.log("Looking for unmute button...");
+    // Look for the unmute button (microphone icon)
     const unmuteButton = document.querySelector('button[aria-label="Turn off microphone"]');
     if (unmuteButton) {
+        console.log("Unmute button found, clicking...");
         unmuteButton.click();
         console.log("Mic Unmuted");
     } else {
