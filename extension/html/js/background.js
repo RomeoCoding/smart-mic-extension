@@ -37,13 +37,14 @@ function connectToServer() {
 }
 
 function muteMic() {
-    checkMuteState("muted");
+    checkMuteState("muted");  // Ensure this function is defined before calling it
 }
 
 function unmuteMic() {
-    checkMuteState("unmuted");
+    checkMuteState("unmuted");  // Ensure this function is defined before calling it
 }
 
+// Define checkMuteState function
 function checkMuteState(state) {
     const muteButton = document.querySelector('button[aria-label*="Mute"], button[aria-label*="Unmute"]');
     
@@ -60,17 +61,16 @@ function checkMuteState(state) {
     }
 }
 
+// Define the function to play sound
 function playNotificationSound(state) {
-    // Play the same sound for both muting and unmuting
-    const soundFile = state === "muted" ? "33782__jobro__3-beep-b.wav" : "33782__jobro__3-beep-b.wav";  
-
-    const audio = new Audio(soundFile);  // Reference the sound file in the same folder as background.js
+    console.log("Playing sound for state:", state);  // Add this for debugging
+    const soundFile = chrome.runtime.getURL('33782__jobro__3-beep-b.wav');  // Use runtime URL for audio
+    const audio = new Audio(soundFile);
+    
     audio.play();
-
     audio.onplay = () => {
         console.log(`${state.charAt(0).toUpperCase() + state.slice(1)} notification played.`);
     };
-
     audio.onerror = (err) => {
         console.error("Error playing sound:", err);
     };
