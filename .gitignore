@@ -1,0 +1,6 @@
+server/my_voice.wav
+__pycache__/
+*.pyc
+*.pyo
+.vscode/
+.DS_Store
