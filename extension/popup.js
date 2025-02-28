@@ -3,7 +3,7 @@ const toggleBtn = document.getElementById('toggleBtn');
 toggleBtn.addEventListener('click', () => {
   if (toggleBtn.textContent === 'Activate') {
     toggleBtn.textContent = 'Deactivate';
-    
+
     // Request microphone access here
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then((stream) => {
