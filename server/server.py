@@ -15,7 +15,8 @@ TYPING_THRESHOLD = 0.1  # Adjust this value based on testing
 # WebSocket connection URI
 uri = "ws://localhost:8765"
 
-async def send_audio_to_extension(websocket, path):  # Updated to include parameters
+# Updated function to match WebSocket server handler signature
+async def send_audio_to_extension(websocket, path):  # Ensure both parameters are included
     duration = 1  # seconds to record per cycle
     samplerate = 16000
     print("Monitoring sound...")
@@ -47,6 +48,7 @@ async def send_audio_to_extension(websocket, path):  # Updated to include parame
         # Sleep before next audio cycle
         await asyncio.sleep(duration)
 
+# Start WebSocket server
 async def start_server():
     server = await websockets.serve(send_audio_to_extension, "localhost", 8765)
     await server.wait_closed()
