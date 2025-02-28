@@ -17,10 +17,18 @@ function connectToServer() {
 
             if (message.action === "unmute") {
                 console.log("Unmuting mic...");
-                chrome.scripting.executeScript({
-                    target: { tabId },
-                    func: unmuteMic
+                chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                    if (tabs.length === 0 || !tabs[0].url.startsWith("http")) {
+                        console.error("Cannot run script on this page.");
+                        return;  // Don't execute on chrome:// pages
+                    }
+                
+                    chrome.scripting.executeScript({
+                        target: { tabId: tabs[0].id },  // Get current tab ID dynamically
+                        func: muteMic
+                    });
                 });
+                
             } else if (message.action === "mute") {
                 console.log("Muting mic...");
                 chrome.scripting.executeScript({
