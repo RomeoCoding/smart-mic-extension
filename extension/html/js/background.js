@@ -10,32 +10,20 @@ function connectToServer() {
 
     ws.onmessage = (event) => {
         const message = JSON.parse(event.data);
-        
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            if (tabs.length === 0) return;
-            const tabId = tabs[0].id;
 
-            if (message.action === "unmute") {
-                console.log("Unmuting mic...");
-                chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                    if (tabs.length === 0 || !tabs[0].url.startsWith("http")) {
-                        console.error("Cannot run script on this page.");
-                        return;  // Don't execute on chrome:// pages
-                    }
-                
-                    chrome.scripting.executeScript({
-                        target: { tabId: tabs[0].id },  // Get current tab ID dynamically
-                        func: muteMic
-                    });
-                });
-                
-            } else if (message.action === "mute") {
-                console.log("Muting mic...");
-                chrome.scripting.executeScript({
-                    target: { tabId },
-                    func: muteMic
-                });
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            if (tabs.length === 0 || !tabs[0].url.includes("meet.google.com")) {
+                console.error("Not a Google Meet tab. Skipping script execution.");
+                return;  // Prevent execution on non-Google Meet pages
             }
+
+            const tabId = tabs[0].id;
+            const actionFunc = message.action === "unmute" ? unmuteMic : muteMic;
+
+            chrome.scripting.executeScript({
+                target: { tabId },
+                func: actionFunc
+            });
         });
     };
 
@@ -48,14 +36,24 @@ function connectToServer() {
     };
 }
 
-function unmuteMic() {
-    const unmuteButton = document.querySelector('button[aria-label="Unmute microphone"]');
-    if (unmuteButton) unmuteButton.click();
+function muteMic() {
+    document.querySelectorAll('button').forEach(button => {
+        if (button.getAttribute("data-tooltip")?.includes("Turn off microphone") || 
+            button.getAttribute("aria-label")?.includes("Mute")) {
+            button.click();
+            console.log("Mic Muted");
+        }
+    });
 }
 
-function muteMic() {
-    const muteButton = document.querySelector('button[aria-label="Mute microphone"]');
-    if (muteButton) muteButton.click();
+function unmuteMic() {
+    document.querySelectorAll('button').forEach(button => {
+        if (button.getAttribute("data-tooltip")?.includes("Turn on microphone") || 
+            button.getAttribute("aria-label")?.includes("Unmute")) {
+            button.click();
+            console.log("Mic Unmuted");
+        }
+    });
 }
 
 function startMonitoring() {

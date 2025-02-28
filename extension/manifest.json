@@ -10,12 +10,13 @@
     "activeTab",
     "storage",
     "webNavigation",
-    "scripting"  // Add this
+    "scripting" 
   ],
   "host_permissions": [
     "http://localhost/*",
     "https://localhost/*",  
-    "ws://localhost/*"
+    "ws://localhost/*",
+    "https://meet.google.com/*"
   ],
   "action": {
     "default_popup": "html/popup.html",
